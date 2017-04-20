@@ -3,18 +3,41 @@ package wdsr.exercise4.sender;
 import java.math.BigDecimal;
 import java.util.Map;
 
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import wdsr.exercise4.Order;
+
+import javax.jms.*;
 
 public class JmsSender {
 	private static final Logger log = LoggerFactory.getLogger(JmsSender.class);
 	
 	private final String queueName;
 	private final String topicName;
+	private ActiveMQConnectionFactory connectionFactory;
+	private Connection connection;
+	private Session session;
+	private Destination destination;
+	private MessageProducer messageProducer;
 
 	public JmsSender(final String queueName, final String topicName) {
 		this.queueName = queueName;
 		this.topicName = topicName;
+		connectionFactory = new ActiveMQConnectionFactory("vm://localhost:61616");
+		try {
+			connection = connectionFactory.createConnection();
+			connection.start();
+
+			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+
+			destination = session.createQueue(queueName);
+
+			messageProducer = session.createProducer(destination);
+			messageProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -25,6 +48,20 @@ public class JmsSender {
 	 */
 	public void sendOrderToQueue(final int orderId, final String product, final BigDecimal price) {
 		// TODO
+		Order order = new Order(orderId, product, price);
+		try {
+			ObjectMessage objectMessage = session.createObjectMessage(order);
+			// jak zrobic by obsluzyc poprawnie te dwa porownania
+			// assertEquals("Order", receivedMessage.getJMSType());
+			// assertEquals("OrderProcessor", receivedMessage.getStringProperty("WDSR-System"));
+			objectMessage.setJMSType("Order");
+			messageProducer.send(objectMessage);
+
+			session.close();
+			connection.close();
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
