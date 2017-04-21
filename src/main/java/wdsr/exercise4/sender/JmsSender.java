@@ -18,8 +18,13 @@ public class JmsSender {
 	private ActiveMQConnectionFactory connectionFactory;
 	private Connection connection;
 	private Session session;
-	private Destination destination;
-	private MessageProducer messageProducer;
+	private Destination destinationQue;
+	private MessageProducer messageProducerQue;
+
+	/*private Connection connectionTopic;
+	private Session sessionTopic;*/
+	private Destination destinationTopic;
+	private MessageProducer messageProducerTopic;
 
 	public JmsSender(final String queueName, final String topicName) {
 		this.queueName = queueName;
@@ -31,10 +36,17 @@ public class JmsSender {
 
 			session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
 
-			destination = session.createQueue(queueName);
+			destinationQue = session.createQueue(this.queueName);
 
-			messageProducer = session.createProducer(destination);
-			messageProducer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+			messageProducerQue = session.createProducer(destinationQue);
+			messageProducerQue.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
+		try {
+			destinationTopic = session.createTopic(this.topicName);
+			messageProducerTopic = session.createProducer(destinationTopic);
+			messageProducerTopic.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
 		} catch (JMSException e) {
 			e.printStackTrace();
 		}
@@ -54,7 +66,7 @@ public class JmsSender {
 			objectMessage.setJMSType("Order");
 			//po co tak na prawde ustawiamy property dla Message? jesli by mi testy na tym nie failowaly to bym np nie wiedzial ze musze to ustawic
 			objectMessage.setStringProperty("WDSR-System", "OrderProcessor");
-			messageProducer.send(objectMessage);
+			messageProducerQue.send(objectMessage);
 			session.close();
 			connection.close();
 		} catch (JMSException e) {
@@ -68,6 +80,14 @@ public class JmsSender {
 	 */
 	public void sendTextToQueue(String text) {
 		// TODO
+		try {
+			TextMessage textMessage = session.createTextMessage(text);
+			messageProducerQue.send(textMessage);
+			session.close();
+			connection.close();
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -76,5 +96,19 @@ public class JmsSender {
 	 */
 	public void sendMapToTopic(Map<String, String> map) {
 		// TODO
+		/*Czy dobrym rozwiazaniem jest robic pod Jms jedna session i connection dla queue i topic?
+		*Czy za kazdym senderem powinieniem zamykac session i connection? Chodzi mi o to jak by to wygladalo podczas pelnej aplikacji a nizeli na potrzeby testow */
+		Map<String, String> tmpMap = map;
+		try {
+			MapMessage mapMessage = session.createMapMessage();
+			for(Map.Entry<String, String> entry: map.entrySet()) {
+				mapMessage.setString(entry.getKey(), entry.getValue());
+			}
+			messageProducerTopic.send(mapMessage);
+			session.close();
+			connection.close();
+		} catch (JMSException e) {
+			e.printStackTrace();
+		}
 	}
 }
