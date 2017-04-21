@@ -51,12 +51,10 @@ public class JmsSender {
 		Order order = new Order(orderId, product, price);
 		try {
 			ObjectMessage objectMessage = session.createObjectMessage(order);
-			// jak zrobic by obsluzyc poprawnie te dwa porownania
-			// assertEquals("Order", receivedMessage.getJMSType());
-			// assertEquals("OrderProcessor", receivedMessage.getStringProperty("WDSR-System"));
 			objectMessage.setJMSType("Order");
+			//po co tak na prawde ustawiamy property dla Message? jesli by mi testy na tym nie failowaly to bym np nie wiedzial ze musze to ustawic
+			objectMessage.setStringProperty("WDSR-System", "OrderProcessor");
 			messageProducer.send(objectMessage);
-
 			session.close();
 			connection.close();
 		} catch (JMSException e) {
