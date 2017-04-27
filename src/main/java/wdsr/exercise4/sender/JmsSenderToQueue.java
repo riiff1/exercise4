@@ -44,11 +44,19 @@ public class JmsSenderToQueue {
                 String text = "test_"+i;
                 TextMessage textMessage = session.createTextMessage(text);
                 messageProducerQue.send(textMessage);
-                session.close();
-                connection.close();
             } catch (JMSException e) {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void closeAllConnections() {
+        try {
+            session.close();
+            connection.close();
+        } catch (JMSException e) {
+            e.printStackTrace();
+        }
+
     }
 }

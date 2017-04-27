@@ -9,5 +9,6 @@ public class Main {
     public static void main(String[] args) {
         JmsSenderToQueue jmsSenderToQueue = new JmsSenderToQueue("testQueue", false);
         jmsSenderToQueue.sendMessageToQueue();
+        jmsSenderToQueue.closeAllConnections();
     }
 }
