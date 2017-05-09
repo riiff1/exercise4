@@ -17,5 +17,6 @@ public class Main {
         JmsSenderToQueue jmsSenderToQueue2 = new JmsSenderToQueue("RIIFF1.QUEUE", true);
         jmsSenderToQueue2.sendMessageToQueue();
         jmsSenderToQueue2.closeAllConnections();
+        System.out.println("asdads");
     }
 }
