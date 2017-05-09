@@ -2,6 +2,7 @@ package wdsr.exercise4;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import wdsr.exercise4.receiver.JmsReceiverFromQueue;
 import wdsr.exercise4.sender.JmsSenderToQueue;
 
 /**
@@ -10,12 +11,9 @@ import wdsr.exercise4.sender.JmsSenderToQueue;
 public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
     public static void main(String[] args) {
-        JmsSenderToQueue jmsSenderToQueue = new JmsSenderToQueue("RIIFF1.QUEUE", false);
-        jmsSenderToQueue.sendMessageToQueue();
-        jmsSenderToQueue.closeAllConnections();
-        log.info("");
-        JmsSenderToQueue jmsSenderToQueue2 = new JmsSenderToQueue("RIIFF1.QUEUE", true);
-        jmsSenderToQueue2.sendMessageToQueue();
-        jmsSenderToQueue2.closeAllConnections();
+        JmsReceiverFromQueue jmsReceiverFromQueue =  new JmsReceiverFromQueue("RIIFF1.QUEUE");
+        jmsReceiverFromQueue.getMessageFromQueue();
+        jmsReceiverFromQueue.closeAllConnections();
+        System.out.println(jmsReceiverFromQueue.getMessages().size());
     }
 }
