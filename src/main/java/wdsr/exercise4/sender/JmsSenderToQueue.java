@@ -17,9 +17,11 @@ public class JmsSenderToQueue {
     private Session session;
     private Destination destinationQue;
     private MessageProducer messageProducerQue;
+    private boolean persistent;
 
     public JmsSenderToQueue(String queueName, boolean persistent) {
         this.queueName = queueName;
+        this.persistent = persistent;
         connectionFactory = new ActiveMQConnectionFactory("tcp://localhost:61616");
         try {
             connection = connectionFactory.createConnection();
@@ -39,15 +41,36 @@ public class JmsSenderToQueue {
     }
 
     public void sendMessageToQueue() {
-        for(int i=1; i<= 10000;i++) {
-            try {
-                String text = "test_"+i;
-                TextMessage textMessage = session.createTextMessage(text);
-                messageProducerQue.send(textMessage);
-            } catch (JMSException e) {
-                e.printStackTrace();
+        log.info("Persistent: " + persistent);
+        long start=System.currentTimeMillis();
+        log.info("Wysylanie wiadomosci - START " + start);
+        //nie wiem czy chcial pan liczenie dwoch traszy pierwszy od 1 do 10k i drugi od 1 do 10k.
+        //zrobilem to ze pierwszy idzie od 1 do 10k a pozniej numeracja jest od 10001 do 20k
+        if(persistent) {
+            for(int i=1; i<= 10000;i++) {
+                try {
+                    String text = "test_"+i;
+                    TextMessage textMessage = session.createTextMessage(text);
+                    messageProducerQue.send(textMessage);
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
             }
         }
+        else {
+            for(int i=10001; i<= 20000;i++) {
+                try {
+                    String text = "test_"+i;
+                    TextMessage textMessage = session.createTextMessage(text);
+                    messageProducerQue.send(textMessage);
+                } catch (JMSException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        long stop=System.currentTimeMillis();
+        log.info("Wysylanie wiadomosci - STOP " + stop);
+        log.info("Czas wykonywania programu: " + (stop-start) + " milisekund");
     }
 
     public void closeAllConnections() {
