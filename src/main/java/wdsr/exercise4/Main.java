@@ -11,9 +11,6 @@ import wdsr.exercise4.sender.JmsSenderToQueue;
 public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
     public static void main(String[] args) {
-        JmsReceiverFromQueue jmsReceiverFromQueue =  new JmsReceiverFromQueue("RIIFF1.QUEUE");
-        jmsReceiverFromQueue.getMessageFromQueue();
-        jmsReceiverFromQueue.closeAllConnections();
-        System.out.println(jmsReceiverFromQueue.getMessages().size());
+        System.out.println("test");
     }
 }
