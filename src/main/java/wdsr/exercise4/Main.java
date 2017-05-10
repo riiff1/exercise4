@@ -3,6 +3,7 @@ package wdsr.exercise4;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import wdsr.exercise4.receiver.JmsReceiverFromQueue;
+import wdsr.exercise4.receiver.JmsTopicSubscriber;
 import wdsr.exercise4.sender.JmsSenderToQueue;
 
 /**
@@ -11,9 +12,9 @@ import wdsr.exercise4.sender.JmsSenderToQueue;
 public class Main {
     private static final Logger log = LoggerFactory.getLogger(Main.class);
     public static void main(String[] args) {
-        JmsReceiverFromQueue jmsReceiverFromQueue =  new JmsReceiverFromQueue("RIIFF1.QUEUE");
-        jmsReceiverFromQueue.getMessageFromQueue();
-        jmsReceiverFromQueue.closeAllConnections();
-        System.out.println(jmsReceiverFromQueue.getMessages().size());
+        JmsTopicSubscriber jmsTopicSubscriber =  new JmsTopicSubscriber("RIIFF1.TOPIC");
+        jmsTopicSubscriber.getMessageFromTopic();
+        jmsTopicSubscriber.closeAllConnections();
+        System.out.println(jmsTopicSubscriber.getMessages().size());
     }
 }

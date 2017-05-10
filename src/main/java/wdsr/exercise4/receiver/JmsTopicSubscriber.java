@@ -28,7 +28,7 @@ public class JmsTopicSubscriber {
             connection = connectionFactory.createConnection();
             connection.start();
             session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            destinationTopic = session.createQueue(this.topicName);
+            destinationTopic = session.createTopic(this.topicName);
 
             messageConsumerTopic = session.createConsumer(destinationTopic);
         } catch (JMSException e) {
@@ -36,7 +36,7 @@ public class JmsTopicSubscriber {
         }
     }
 
-    public void getMessageFromQueue() {
+    public void getMessageFromTopic() {
         try {
             if(messageConsumerTopic != null)
             {
